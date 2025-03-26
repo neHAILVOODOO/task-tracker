@@ -1,0 +1,110 @@
+databaseChangeLog:
+  - changeSet:
+      id:  create-table-users
+      author:  VOODOO
+      changes:
+        - createTable:
+            tableName:  users
+            columns:
+              - column:
+                  name:  id
+                  type:  int
+                  autoIncrement:  true
+                  constraints:
+                    primaryKey:  true
+                    nullable:  false
+              - column:
+                  name:  name
+                  type:  varchar(255)
+                  constraints:
+                    nullable:  false
+              - column:
+                  name:  email
+                  type:  varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name:  password
+                  type:  varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name:  age
+                  type:  int
+
+  - changeSet:
+      id:  create-table-tasks
+      author:  VOODOO
+      changes:
+        - createTable:
+            tableName:  tasks
+            columns:
+              - column:
+                  name:  id
+                  type:  int
+                  autoIncrement:  true
+                  constraints:
+                    primaryKey:  true
+                    nullable:  false
+              - column:
+                  name:  name
+                  type:  varchar(255)
+                  constraints:
+                    nullable:  false
+              - column:
+                  name:  description
+                  type:  text
+                  constraints:
+                    nullable: false
+              - column:
+                  name:  priority
+                  type:  varchar(25)
+                  constraints:
+                    nullable: false
+              - column:
+                  name:  status
+                  type:  varchar(25)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: int
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_tasks_users
+                    references: users(id)
+
+  - changeSet:
+      id:  create-table-comments
+      author:  VOODOO
+      changes:
+        - createTable:
+            tableName:  comments
+            columns:
+              - column:
+                  name:  id
+                  type:  int
+                  autoIncrement:  true
+                  constraints:
+                    primaryKey:  true
+                    nullable:  false
+              - column:
+                  name: text
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: int
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_comments_users
+                    references: users(id)
+              - column:
+                  name: task_id
+                  type: int
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_comments_tasks
+                    references: users(id)
+
