@@ -1,8 +1,8 @@
-package com.example.tasktracker.model;
+package com.example.tasktracker.model.entity;
 
 
-import com.example.tasktracker.enums.TaskPriority;
-import com.example.tasktracker.enums.TaskStatus;
+import com.example.tasktracker.model.enums.TaskPriority;
+import com.example.tasktracker.model.enums.TaskStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

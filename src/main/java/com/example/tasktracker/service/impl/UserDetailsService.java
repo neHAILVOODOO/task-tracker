@@ -1,6 +1,6 @@
-package com.example.tasktracker.service;
+package com.example.tasktracker.service.impl;
 
-import com.example.tasktracker.model.User;
+import com.example.tasktracker.model.entity.User;
 import com.example.tasktracker.repo.UserRepo;
 import com.example.tasktracker.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;

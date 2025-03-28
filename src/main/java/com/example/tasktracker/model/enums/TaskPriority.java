@@ -1,4 +1,4 @@
-package com.example.tasktracker.enums;
+package com.example.tasktracker.model.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
