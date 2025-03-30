@@ -1,13 +1,16 @@
 package com.example.tasktracker.exception.handler;
 
 
-import com.example.tasktracker.exception.AccessDeniedException;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.example.tasktracker.exception.CannotChangeTaskChecking;
 import com.example.tasktracker.exception.NotFoundException;
 import com.example.tasktracker.exception.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,7 +18,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @ControllerAdvice
-    public class GlobalExceptionHandler {
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<String> handleBadCredentialsException() {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Неверные учетные данные");
+    }
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<String> handleUsernameNotFoundException(UsernameNotFoundException ex) {
@@ -27,10 +35,6 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<String> handleBadCredentialsException() {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Неверные учетные данные");
-    }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<String> handleNotFoundException(NotFoundException ex) {
@@ -79,8 +83,9 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    public ResponseEntity<String> handleAccessDeniedException() {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Нет доступа");
     }
+
 
 }

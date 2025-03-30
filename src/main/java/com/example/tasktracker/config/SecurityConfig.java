@@ -6,7 +6,9 @@ import com.example.tasktracker.service.impl.UserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -44,6 +46,19 @@ public class SecurityConfig {
                         .requestMatchers("/auth/login").permitAll()
                         .requestMatchers("/auth/register").permitAll()
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(handling -> handling
+                        .authenticationEntryPoint((request, response, authEx) -> {
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+
+                            String errorMessage;
+                                errorMessage = "Аутентификация не была произведена";
+
+                            response.getWriter().write(
+                                    String.format(errorMessage)
+                            );
+                        })
                 );
 
         return http.build();

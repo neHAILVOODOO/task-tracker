@@ -1,5 +1,6 @@
 package com.example.tasktracker.controller.comment;
 
+import com.example.tasktracker.annotation.IsManagerOrCurrentUser;
 import com.example.tasktracker.model.dto.CreateUpdateCommentDto;
 import com.example.tasktracker.model.dto.GetCommentDto;
 import com.example.tasktracker.security.UserPrincipal;
@@ -20,25 +21,27 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/tasks")
+@RequestMapping("/employee")
 public class CommentController {
 
     private final CommentService commentService;
 
-    @GetMapping("/{taskId}/comments")
-    private ResponseEntity<List<GetCommentDto>> getTaskComments(@AuthenticationPrincipal UserPrincipal userPrincipal,
+    @GetMapping("/{userId}/tasks/{taskId}/comments")
+    @IsManagerOrCurrentUser
+    private ResponseEntity<List<GetCommentDto>> getTaskComments(@PathVariable long userId,
                                                                 @PathVariable long taskId) {
 
-        List<GetCommentDto> comments = commentService.findAllCommentsByTask(taskId, userPrincipal.getUserId());
+        List<GetCommentDto> comments = commentService.findAllCommentsByTask(taskId, userId);
         return ResponseEntity.ok(comments);
     }
 
-    @PostMapping("/{taskId}/comments")
-    private ResponseEntity<String> commentTask(@AuthenticationPrincipal UserPrincipal userPrincipal,
+    @PostMapping("/{userId}/tasks/{taskId}/comments")
+    @IsManagerOrCurrentUser
+    private ResponseEntity<String> commentTask(@PathVariable long userId,
                                                @Valid @RequestBody CreateUpdateCommentDto createUpdateCommentDto,
                                                @PathVariable long taskId) {
 
-        commentService.addCommentForTask(createUpdateCommentDto, taskId, userPrincipal.getUserId());
+        commentService.addCommentForTask(createUpdateCommentDto, taskId, userId);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

@@ -1,6 +1,5 @@
 package com.example.tasktracker.service.impl;
 
-import com.example.tasktracker.exception.AccessDeniedException;
 import com.example.tasktracker.exception.CannotChangeTaskChecking;
 import com.example.tasktracker.exception.NotFoundException;
 import com.example.tasktracker.mapper.TaskMapper;
