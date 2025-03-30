@@ -1,6 +1,8 @@
 package com.example.tasktracker.exception.handler;
 
 
+import com.example.tasktracker.exception.AccessDeniedException;
+import com.example.tasktracker.exception.CannotChangeTaskChecking;
 import com.example.tasktracker.exception.NotFoundException;
 import com.example.tasktracker.exception.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
@@ -69,6 +71,16 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
         );
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+    }
+
+    @ExceptionHandler(CannotChangeTaskChecking.class)
+    public ResponseEntity<String> handleCannotChangeTaskChecking(CannotChangeTaskChecking ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
 }

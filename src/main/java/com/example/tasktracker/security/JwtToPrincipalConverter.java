@@ -1,11 +1,9 @@
 package com.example.tasktracker.security;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import com.example.tasktracker.model.enums.UserRole;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
 import java.util.List;
 
 @Component
@@ -15,13 +13,28 @@ public class JwtToPrincipalConverter {
         return UserPrincipal.builder()
                 .userId(Long.valueOf(jwt.getSubject()))
                 .login(jwt.getClaim("e").asString())
-                .authorities(extractAuthoritiesFromClaim(jwt))
+                .role(extractRoleFromClaim(jwt))
                 .build();
     }
 
-    private Collection<? extends GrantedAuthority> extractAuthoritiesFromClaim(DecodedJWT jwt) {
-        var claim = jwt.getClaim("a");
-        if (claim.isNull() || claim.isMissing()) return List.of();
-        return claim.asList(SimpleGrantedAuthority.class);
+    private UserRole extractRoleFromClaim(DecodedJWT jwt) {
+        if (jwt == null) return UserRole.EMPLOYEE;
+
+        String roleClaim = jwt.getClaim("a").asList(String.class)
+                .stream()
+                .findFirst()
+                .orElse(null);
+
+        if (roleClaim == null) return UserRole.EMPLOYEE;
+
+        String cleanRole = roleClaim.replaceFirst("^ROLE_", "").toUpperCase();
+
+        try {
+            return UserRole.valueOf(cleanRole);
+        } catch (IllegalArgumentException e) {
+            return UserRole.EMPLOYEE;
+        }
     }
+
+
 }

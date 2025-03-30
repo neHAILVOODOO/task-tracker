@@ -13,6 +13,7 @@ import lombok.Setter;
 @Builder
 public class UserPreviewDto {
 
+    private long id;
     private String name;
     private int age;
 

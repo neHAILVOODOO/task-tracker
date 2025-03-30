@@ -1,10 +1,9 @@
-package com.example.tasktracker.controller;
+package com.example.tasktracker.controller.comment;
 
 import com.example.tasktracker.model.dto.CreateUpdateCommentDto;
 import com.example.tasktracker.model.dto.GetCommentDto;
 import com.example.tasktracker.security.UserPrincipal;
 import com.example.tasktracker.service.CommentService;
-import com.example.tasktracker.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

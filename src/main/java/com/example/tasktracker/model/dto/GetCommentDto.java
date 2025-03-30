@@ -13,8 +13,8 @@ import lombok.Setter;
 @Builder
 public class GetCommentDto {
 
-    String text;
-    UserPreviewDto author;
+    private String text;
+    private UserPreviewDto author;
 
 
 }

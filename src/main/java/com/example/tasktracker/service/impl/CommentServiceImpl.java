@@ -28,18 +28,19 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<GetCommentDto> findAllCommentsByTask(long taskId, long userId) {
 
-        Task task = taskRepo.findByUserAndId(userRepo.findUserById(userId), taskId);
+        //Task task = taskRepo.findByAuthorAndId(userRepo.findUserById(userId), taskId);
 
-        List<Comment> comments = commentRepo.findAllByTask(task);
-        return comments.stream().map(commentMapper::mapCommentToGetCommentDto).collect(Collectors.toList());
+       // List<Comment> comments = commentRepo.findAllByTask(task);
+       // return comments.stream().map(commentMapper::mapCommentToGetCommentDto).collect(Collectors.toList());
 
+        return null;
     }
 
     @Override
     public void addCommentForTask(CreateUpdateCommentDto createUpdateCommentDto, long taskId, long userId) {
         Comment comment = commentMapper.mapCreateUpdateCommentDtoToComment(createUpdateCommentDto);
         comment.setAuthor(userRepo.findUserById(userId));
-        comment.setTask(taskRepo.findById(taskId));
+        //comment.setTask(taskRepo.findById(taskId));
         commentRepo.save(comment);
     }
 }

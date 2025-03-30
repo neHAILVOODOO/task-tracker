@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
 
 @Component
 @RequiredArgsConstructor
@@ -28,7 +27,7 @@ public class UserDetailsService implements org.springframework.security.core.use
         return UserPrincipal.builder()
                 .userId(user.getId())
                 .login(user.getEmail())
-                .authorities(Collections.emptyList())
+                .role(user.getRole())
                 .password(user.getPassword())
                 .build();
     }

@@ -1,8 +1,11 @@
 package com.example.tasktracker.model.entity;
 
+import com.example.tasktracker.model.enums.UserRole;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -47,8 +50,15 @@ public class User {
     @Column(name = "age")
     private int age;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
-    private List<Task> tasks;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
+    private UserRole role;
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE)
+    private List<Task> authorOfTasks;
+
+    @OneToMany(mappedBy = "executor", cascade = CascadeType.REMOVE)
+    private List<Task> executorOfTasks;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE)
     private List<Comment> comments;

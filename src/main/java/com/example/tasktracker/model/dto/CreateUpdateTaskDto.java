@@ -26,5 +26,7 @@ public class CreateUpdateTaskDto {
     private TaskPriority priority;
     @NotNull(message = "Укажите статус задачи")
     private TaskStatus status;
+    @NotNull(message = "Укажите исполнителя задачи")
+    private Long executorId;
 
 }

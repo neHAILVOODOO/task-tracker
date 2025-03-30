@@ -1,4 +1,4 @@
-package com.example.tasktracker.controller;
+package com.example.tasktracker.controller.common;
 
 import com.example.tasktracker.model.dto.CreateUserDto;
 import com.example.tasktracker.model.dto.UserLoginDto;

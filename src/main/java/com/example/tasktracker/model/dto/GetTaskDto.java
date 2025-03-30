@@ -19,7 +19,9 @@ public class GetTaskDto {
     private String description;
     private TaskPriority priority;
     private TaskStatus status;
+    private boolean onChecking;
     private UserPreviewDto author;
+    private UserPreviewDto executor;
 
 
 }

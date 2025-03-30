@@ -14,6 +14,7 @@ public class UserMapper {
                 .name(createUserDto.getName())
                 .email(createUserDto.getEmail())
                 .password(createUserDto.getPassword())
+                .role(createUserDto.getUserRole())
                 .build();
 
     }
@@ -21,6 +22,7 @@ public class UserMapper {
     public UserPreviewDto mapUserToUserPreviewDto(User user) {
 
         return UserPreviewDto.builder()
+                .id(user.getId())
                 .name(user.getName())
                 .age(user.getAge())
                 .build();

@@ -31,6 +31,12 @@ databaseChangeLog:
               - column:
                   name:  age
                   type:  int
+              - column:
+                  name:  role
+                  type:  varchar(25)
+                  constraints:
+                    nullable: false
+
 
   - changeSet:
       id:  create-table-tasks
@@ -67,11 +73,24 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: user_id
+                  name: on_checking
+                  type: boolean
+                  defaultValue: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: author_id
                   type: int
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_tasks_users
+                    foreignKeyName: fk_tasks_users_author
+                    references: users(id)
+              - column:
+                  name: executor_id
+                  type: int
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_tasks_users_executor
                     references: users(id)
 
   - changeSet:

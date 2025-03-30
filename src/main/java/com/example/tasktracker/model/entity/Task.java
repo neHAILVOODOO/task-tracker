@@ -55,11 +55,20 @@ public class Task {
     @Column(name = "status")
     private TaskStatus status;
 
+    @Column(name = "on_checking")
+    boolean onChecking;
+
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "author_id")
+    private User author;
+
+    @ManyToOne
+    @JoinColumn(name = "executor_id")
+    private User executor;
 
     @OneToMany(mappedBy = "task", cascade = CascadeType.REMOVE)
     private List<Comment> comments;
+
+
 
 }

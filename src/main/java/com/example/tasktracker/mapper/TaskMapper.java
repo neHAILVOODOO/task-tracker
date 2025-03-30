@@ -7,14 +7,12 @@ import com.example.tasktracker.model.entity.Task;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class TaskMapper {
 
     private final UserMapper userMapper;
-    private final CommentMapper commentMapper;
 
     public Task mapCreateUpdateTaskDtoToTask(CreateUpdateTaskDto createUpdateTaskDto) {
 
@@ -23,6 +21,7 @@ public class TaskMapper {
                 .description(createUpdateTaskDto.getDescription())
                 .priority(createUpdateTaskDto.getPriority())
                 .status(createUpdateTaskDto.getStatus())
+                .onChecking(false)
                 .build();
 
     }
@@ -30,6 +29,7 @@ public class TaskMapper {
     public GetTaskForListDto mapTaskToTaskForListDto(Task task) {
 
         return GetTaskForListDto.builder()
+                .id(task.getId())
                 .name(task.getName())
                 .description(task.getDescription())
                 .priority(task.getPriority())
@@ -45,7 +45,9 @@ public class TaskMapper {
                 .description(task.getDescription())
                 .priority(task.getPriority())
                 .status(task.getStatus())
-                .author(userMapper.mapUserToUserPreviewDto(task.getUser()))
+                .onChecking(task.isOnChecking())
+                .author(userMapper.mapUserToUserPreviewDto(task.getAuthor()))
+                .executor(userMapper.mapUserToUserPreviewDto(task.getExecutor()))
                 .build();
 
     }

@@ -16,5 +16,5 @@ public class CreateUpdateCommentDto {
 
 
     @NotBlank(message = "Комментарий не может быть пустым")
-    String text;
+    private String text;
 }

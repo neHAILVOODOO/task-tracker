@@ -1,7 +1,7 @@
 package com.example.tasktracker.model.dto;
 
-import com.example.tasktracker.model.enums.TaskPriority;
 import com.example.tasktracker.model.enums.TaskStatus;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,14 +13,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GetTaskForListDto {
+public class TaskCheckingDto {
 
-    private long id;
-    private String name;
-    private String description;
-    private TaskPriority priority;
+    @NotNull(message = "Укажите, отправляете ли вы задачу на проверку")
+    private Boolean onChecking;
+    @NotNull(message = "Укажите статус задачи")
     private TaskStatus status;
-    private int commentsCount;
-
 
 }

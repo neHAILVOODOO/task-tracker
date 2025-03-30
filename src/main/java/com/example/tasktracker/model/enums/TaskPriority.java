@@ -9,9 +9,10 @@ import lombok.ToString;
 @ToString
 public enum TaskPriority {
 
-    HIGH("Высокий"),
+    LOW("Низкий"),
     MEDIUM("Средний"),
-    LOW("Низкий");
+    HIGH("Высокий");
+
 
     private final String displayPriority;
 
