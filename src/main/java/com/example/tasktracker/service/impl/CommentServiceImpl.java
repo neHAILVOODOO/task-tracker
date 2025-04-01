@@ -1,5 +1,6 @@
 package com.example.tasktracker.service.impl;
 
+import com.example.tasktracker.exception.NotFoundException;
 import com.example.tasktracker.mapper.CommentMapper;
 import com.example.tasktracker.model.dto.CreateUpdateCommentDto;
 import com.example.tasktracker.model.dto.GetCommentDto;
@@ -10,6 +11,7 @@ import com.example.tasktracker.repo.TaskRepo;
 import com.example.tasktracker.repo.UserRepo;
 import com.example.tasktracker.service.CommentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,19 +30,51 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<GetCommentDto> findAllCommentsByTask(long taskId, long userId) {
 
-        //Task task = taskRepo.findByAuthorAndId(userRepo.findUserById(userId), taskId);
 
-       // List<Comment> comments = commentRepo.findAllByTask(task);
-       // return comments.stream().map(commentMapper::mapCommentToGetCommentDto).collect(Collectors.toList());
+        Task task = taskRepo.findByExecutorAndId(userRepo.findUserById(userId), taskId)
+                .orElseThrow(() -> new NotFoundException("Задача не найдена"));
 
-        return null;
+        List<Comment> comments = commentRepo.findAllByTask(task);
+        return comments.stream().map(commentMapper::mapCommentToGetCommentDto).collect(Collectors.toList());
+
     }
 
     @Override
     public void addCommentForTask(CreateUpdateCommentDto createUpdateCommentDto, long taskId, long userId) {
+
+        Task task = taskRepo.findByExecutorAndId(userRepo.findUserById(userId), taskId)
+                .orElseThrow(() -> new NotFoundException("Задача не найдена"));
         Comment comment = commentMapper.mapCreateUpdateCommentDtoToComment(createUpdateCommentDto);
         comment.setAuthor(userRepo.findUserById(userId));
-        //comment.setTask(taskRepo.findById(taskId));
+        comment.setTask(task);
         commentRepo.save(comment);
     }
+
+    @Override
+    public void deleteComment(long userId, long taskId, long commentId) {
+
+        Task task = taskRepo.findByExecutorAndId(userRepo.findUserById(userId),taskId)
+                .orElseThrow(() -> new NotFoundException("Задача не найдена"));
+
+        Comment comment = commentRepo.findByIdAndTask(commentId, task)
+                .orElseThrow(() -> new NotFoundException("Комментарий не найден"));
+
+        commentRepo.delete(comment);
+
+    }
+
+    @Override
+    public void updateComment(long userId, long taskId, long commentId, CreateUpdateCommentDto createUpdateCommentDto) {
+
+        Task task = taskRepo.findByExecutorAndId(userRepo.findUserById(userId),taskId)
+                .orElseThrow(() -> new NotFoundException("Задача не найдена"));
+
+        Comment comment = commentRepo.findByIdAndTask(commentId, task)
+                .orElseThrow(() -> new NotFoundException("Комментарий не найден"));
+
+        BeanUtils.copyProperties(createUpdateCommentDto, comment);
+        commentRepo.save(comment);
+
+    }
+
 }

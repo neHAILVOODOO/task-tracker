@@ -1,6 +1,7 @@
 package com.example.tasktracker.model.dto;
 
 import com.example.tasktracker.model.enums.UserRole;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -19,6 +20,7 @@ public class CreateUserDto {
     @NotBlank(message = "Имя не может быть пустым")
     private String name;
     @NotBlank(message = "Email не может быть пустым")
+    @Email(message = "Должен быть валидный email")
     private String email;
     @NotBlank(message = "Пароль не может быть пустым")
     private String password;

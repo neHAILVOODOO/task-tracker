@@ -11,4 +11,8 @@ public interface CommentService {
 
     void addCommentForTask(CreateUpdateCommentDto createUpdateCommentDto, long taskId, long userId);
 
+    void deleteComment(long userId, long taskId, long commentId);
+
+    void updateComment(long userId, long taskId, long commentId, CreateUpdateCommentDto createUpdateCommentDto);
+
 }
