@@ -1,9 +1,9 @@
 package com.example.tasktracker.controller.task;
 
 import com.example.tasktracker.annotation.IsManagerOrCurrentUser;
-import com.example.tasktracker.model.dto.GetTaskDto;
-import com.example.tasktracker.model.dto.GetTaskForListDto;
-import com.example.tasktracker.model.dto.TaskCheckingDto;
+import com.example.tasktracker.model.dto.task.GetTaskDto;
+import com.example.tasktracker.model.dto.task.GetTaskForListDto;
+import com.example.tasktracker.model.dto.task.TaskCheckingDto;
 import com.example.tasktracker.service.TaskService;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

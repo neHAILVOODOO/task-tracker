@@ -1,4 +1,4 @@
-package com.example.tasktracker.model.dto;
+package com.example.tasktracker.model.dto.user;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

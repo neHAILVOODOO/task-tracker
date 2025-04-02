@@ -1,7 +1,7 @@
 package com.example.tasktracker.service;
 
-import com.example.tasktracker.model.dto.CreateUpdateCommentDto;
-import com.example.tasktracker.model.dto.GetCommentDto;
+import com.example.tasktracker.model.dto.comment.CreateUpdateCommentDto;
+import com.example.tasktracker.model.dto.comment.GetCommentDto;
 
 import java.util.List;
 

@@ -21,7 +21,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Data
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "comments")

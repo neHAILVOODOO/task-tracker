@@ -30,7 +30,7 @@ import java.util.List;
 @Getter
 @Setter
 @Data
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "tasks")

@@ -1,4 +1,4 @@
-package com.example.tasktracker.model.dto;
+package com.example.tasktracker.model.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

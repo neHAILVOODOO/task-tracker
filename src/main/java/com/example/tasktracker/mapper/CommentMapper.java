@@ -1,7 +1,7 @@
 package com.example.tasktracker.mapper;
 
-import com.example.tasktracker.model.dto.CreateUpdateCommentDto;
-import com.example.tasktracker.model.dto.GetCommentDto;
+import com.example.tasktracker.model.dto.comment.CreateUpdateCommentDto;
+import com.example.tasktracker.model.dto.comment.GetCommentDto;
 import com.example.tasktracker.model.entity.Comment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

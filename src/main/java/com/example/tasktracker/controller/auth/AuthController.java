@@ -1,7 +1,7 @@
-package com.example.tasktracker.controller.common;
+package com.example.tasktracker.controller.auth;
 
-import com.example.tasktracker.model.dto.CreateUserDto;
-import com.example.tasktracker.model.dto.UserLoginDto;
+import com.example.tasktracker.model.dto.user.CreateUserDto;
+import com.example.tasktracker.model.dto.user.UserLoginDto;
 import com.example.tasktracker.service.AuthService;
 import com.example.tasktracker.service.UserService;
 import jakarta.validation.Valid;

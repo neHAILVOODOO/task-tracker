@@ -2,8 +2,8 @@ package com.example.tasktracker.service.impl;
 
 import com.example.tasktracker.exception.NotFoundException;
 import com.example.tasktracker.mapper.CommentMapper;
-import com.example.tasktracker.model.dto.CreateUpdateCommentDto;
-import com.example.tasktracker.model.dto.GetCommentDto;
+import com.example.tasktracker.model.dto.comment.CreateUpdateCommentDto;
+import com.example.tasktracker.model.dto.comment.GetCommentDto;
 import com.example.tasktracker.model.entity.Comment;
 import com.example.tasktracker.model.entity.Task;
 import com.example.tasktracker.repo.CommentRepo;

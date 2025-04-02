@@ -1,8 +1,8 @@
 package com.example.tasktracker.controller.task;
 
-import com.example.tasktracker.model.dto.CreateUpdateTaskDto;
-import com.example.tasktracker.model.dto.GetTaskForListDto;
-import com.example.tasktracker.model.dto.TaskCheckingDto;
+import com.example.tasktracker.model.dto.task.CreateUpdateTaskDto;
+import com.example.tasktracker.model.dto.task.GetTaskForListDto;
+import com.example.tasktracker.model.dto.task.TaskCheckingDto;
 import com.example.tasktracker.security.UserPrincipal;
 import com.example.tasktracker.service.TaskService;
 import jakarta.validation.Valid;

@@ -1,8 +1,8 @@
 package com.example.tasktracker.mapper;
 
-import com.example.tasktracker.model.dto.CreateUpdateTaskDto;
-import com.example.tasktracker.model.dto.GetTaskDto;
-import com.example.tasktracker.model.dto.GetTaskForListDto;
+import com.example.tasktracker.model.dto.task.CreateUpdateTaskDto;
+import com.example.tasktracker.model.dto.task.GetTaskDto;
+import com.example.tasktracker.model.dto.task.GetTaskForListDto;
 import com.example.tasktracker.model.entity.Task;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

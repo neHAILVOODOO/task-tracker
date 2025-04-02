@@ -1,9 +1,9 @@
 package com.example.tasktracker.service;
 
-import com.example.tasktracker.model.dto.CreateUpdateTaskDto;
-import com.example.tasktracker.model.dto.GetTaskDto;
-import com.example.tasktracker.model.dto.GetTaskForListDto;
-import com.example.tasktracker.model.dto.TaskCheckingDto;
+import com.example.tasktracker.model.dto.task.CreateUpdateTaskDto;
+import com.example.tasktracker.model.dto.task.GetTaskDto;
+import com.example.tasktracker.model.dto.task.GetTaskForListDto;
+import com.example.tasktracker.model.dto.task.TaskCheckingDto;
 import org.springframework.data.domain.Page;
 
 public interface TaskService {

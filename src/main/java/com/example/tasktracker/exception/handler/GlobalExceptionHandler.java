@@ -4,6 +4,7 @@ package com.example.tasktracker.exception.handler;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.example.tasktracker.exception.CannotChangeTaskChecking;
+import com.example.tasktracker.exception.ConflictException;
 import com.example.tasktracker.exception.NotFoundException;
 import com.example.tasktracker.exception.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
@@ -87,5 +88,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Нет доступа");
     }
 
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<String> handleConflictException(ConflictException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
 
 }

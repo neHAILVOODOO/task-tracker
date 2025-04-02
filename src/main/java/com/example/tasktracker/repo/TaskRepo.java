@@ -21,8 +21,5 @@ public interface TaskRepo extends JpaRepository<Task, Long> {
 
     Optional<Task> findByExecutorAndId(User executor, long taskId);
 
-    boolean existsByExecutorAndId(User executor, long taskId);
-
-
 
 }

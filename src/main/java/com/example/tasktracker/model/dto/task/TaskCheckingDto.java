@@ -1,4 +1,4 @@
-package com.example.tasktracker.model.dto;
+package com.example.tasktracker.model.dto.task;
 
 import com.example.tasktracker.model.enums.TaskStatus;
 import jakarta.validation.constraints.NotNull;
