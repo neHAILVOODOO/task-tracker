@@ -27,6 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+
             extractTokenFromRequest(request)
                     .map(token -> {
                         try {
@@ -49,4 +50,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         return Optional.empty();
     }
+
 }

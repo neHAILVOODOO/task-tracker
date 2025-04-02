@@ -4,6 +4,7 @@ import com.example.tasktracker.annotation.IsManagerOrCurrentUser;
 import com.example.tasktracker.model.dto.comment.CreateUpdateCommentDto;
 import com.example.tasktracker.model.dto.comment.GetCommentDto;
 import com.example.tasktracker.service.CommentService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/employee")
+@RequestMapping("/api/employee")
 public class CommentController {
 
     private final CommentService commentService;
