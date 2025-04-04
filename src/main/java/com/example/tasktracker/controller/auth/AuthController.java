@@ -4,6 +4,8 @@ import com.example.tasktracker.model.dto.user.CreateUserDto;
 import com.example.tasktracker.model.dto.user.UserLoginDto;
 import com.example.tasktracker.service.AuthService;
 import com.example.tasktracker.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,6 +29,7 @@ public class AuthController {
         String token = authService.attemptLogin(userLoginDto.getEmail(), userLoginDto.getPassword());
         return ResponseEntity.ok(token);
     }
+
 
     @PostMapping("/register")
     public ResponseEntity<Void> register(@Valid @RequestBody CreateUserDto createUserDto) {

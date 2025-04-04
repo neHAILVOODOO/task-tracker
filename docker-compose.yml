@@ -10,3 +10,50 @@ services:
       POSTGRES_DB: task_tracker
     ports:
       - "5433:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U task-tracker -d task_tracker" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  task-tracker-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: task-tracker-app
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/task_tracker
+      SPRING_DATASOURCE_USERNAME: task-tracker
+      SPRING_DATASOURCE_PASSWORD: password
+    ports:
+      - "8081:8081"
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  builder:
+    image: maven:3.8.6-eclipse-temurin-17
+    container_name: task-tracker-builder
+    volumes:
+      - .:/app
+      - maven-repo:/root/.m2
+    working_dir: /app
+    command: mvn clean package -DskipTests
+    networks:
+      - app-network
+
+volumes:
+  postgres-data:
+  maven-repo:
+
+networks:
+  app-network:
+    driver: bridge

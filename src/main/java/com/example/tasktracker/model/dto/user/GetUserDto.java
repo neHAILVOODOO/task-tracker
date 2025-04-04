@@ -17,7 +17,6 @@ public class GetUserDto {
     private long id;
     private String name;
     private String email;
-    private String password;
     private int age;
     private UserRole role;
 

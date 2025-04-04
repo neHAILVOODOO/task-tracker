@@ -1,0 +1,1149 @@
+openapi: 3.0.3
+info:
+  title: Auth API
+  version: 1.0.0
+  description: API для управления задачами
+
+servers:
+  - url: http://localhost:8081/api
+    description: Локальный сервер
+
+security:
+  - bearerAuth: []
+
+paths:
+  /auth/login:
+    post:
+      security: []
+      tags:
+        - Authentication
+      summary: Аутентификация пользователя
+      description: Позволяет пользователю войти в систему, используя email и пароль
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLoginDto'
+      responses:
+        '200':
+          description: Успешная аутентификация
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        '400':
+          description: Невалидные данные
+        '401':
+          description: Неверные учетные данные
+
+
+  /auth/register:
+    post:
+      security: []
+      tags:
+        - Authentication
+      summary: Регистрация нового пользователя
+      description: Создает нового пользователя в системе
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserDto'
+      responses:
+        '201':
+          description: Пользователь успешно зарегистрирован
+        '400':
+          description: Невалидные данные или пользователь уже существует
+        '409':
+          description: Email уже занят
+
+  /user/profile/{userId}:
+    get:
+      tags:
+        - User Profile
+      summary: Получить профиль пользователя
+      description: Возвращает информацию о пользователе по его ID
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        '200':
+          description: Профиль пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUserDto'
+        '404':
+          description: Пользователь не найден
+        '403':
+          description: Доступ запрещен
+
+  /edit/password:
+    patch:
+      tags:
+        - User Profile
+      summary: Обновление пароля пользователя
+      description: |
+        Изменяет пароль текущего авторизованного пользователя.
+        Требует подтверждения текущего пароля.
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserPasswordDto'
+      responses:
+        '204':
+          description: Пароль успешно изменен
+        '400':
+          description: |
+            Невалидные данные:
+            - Неверный текущий пароль
+            - Новые пароли не совпадают
+            - Пароль короче 8 символов
+        '401':
+          description: Требуется авторизация
+        '403':
+          description: Нет прав для изменения пароля
+
+  /edit/email:
+    patch:
+      tags:
+        - User Profile
+      summary: Обновление email пользователя
+      description: |
+        Изменяет email текущего авторизованного пользователя.
+        Требует подтверждения текущим паролем.
+      security:
+        - bearerAuth: [ ]  # Требуется JWT-токен
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserEmailDto'
+      responses:
+        '204':
+          description: Email успешно изменен
+        '400':
+          description: |
+            Невалидные данные:
+            - Неверный формат email
+            - Неверный текущий пароль
+            - Email уже занят другим пользователем
+        '401':
+          description: Требуется авторизация
+        '409':
+          description: Email уже используется
+
+  /edit/bio:
+    patch:
+      tags:
+        - User Profile
+      summary: Обновление информации о пользователе
+      description: Обновляет имя и возраст пользователя
+      security:
+        - bearerAuth: [ ]  # Требуется JWT-токен
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserBioDto'
+      responses:
+        '204':
+          description: Информация успешно обновлена
+        '400':
+          description: Невалидные данные
+        '401':
+          description: Требуется авторизация
+
+
+  /employee/{userId}/tasks:
+    get:
+      tags:
+        - Employee Tasks
+      summary: Получение списка задач сотрудника
+      description: |
+        Возвращает пагинированный список задач для указанного пользователя.
+        Доступно только менеджеру или самому пользователю.
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 123
+          description: ID сотрудника
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+          description: Номер страницы (начинается с 0)
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 10
+            minimum: 5
+            maximum: 15
+          description: Количество элементов на странице (5-15)
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            default: "id"
+            enum: [ id, name, priority, status, createdDate ]
+          description: Поле для сортировки
+        - name: direction
+          in: query
+          schema:
+            type: string
+            default: "asc"
+            enum: [ asc, desc ]
+          description: Направление сортировки
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedTasks'
+        '400':
+          description: Неверные параметры запроса
+        '401':
+          description: Требуется авторизация
+        '403':
+          description: Нет прав доступа (не менеджер и не владелец)
+
+  /manager/tasks:
+    get:
+      tags:
+        - Manager Tasks
+      summary: Получить список всех задач (для менеджеров)
+      description: |
+        Возвращает пагинированный список всех задач в системе.
+        Доступно только пользователям с ролью MANAGER.
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            format: int32
+            default: 0
+            minimum: 0
+          description: Номер страницы (начинается с 0)
+        - name: size
+          in: query
+          schema:
+            type: integer
+            format: int32
+            default: 10
+            minimum: 5
+            maximum: 15
+          description: Количество элементов на странице (5-15)
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            default: "id"
+            enum: [ id, name, priority, status, createdDate ]
+          description: Поле для сортировки
+        - name: direction
+          in: query
+          schema:
+            type: string
+            default: "asc"
+            enum: [ asc, desc ]
+          description: Направление сортировки
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedTasks'
+        '400':
+          description: Неверные параметры запроса
+        '401':
+          description: Требуется авторизация
+        '403':
+          description: Недостаточно прав (требуется роль MANAGER)
+
+    post:
+      tags:
+        - Manager Tasks
+      summary: Создать новую задачу
+      description: |
+        Создает новую задачу и назначает исполнителя.
+        Доступно только пользователям с ролью MANAGER.
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUpdateTaskDto'
+            example:
+              name: "Рефакторинг модуля авторизации"
+              description: "Необходимо переработать систему аутентификации"
+              priority: "HIGH"
+              status: "NEW"
+              executorId: 123
+      responses:
+        '201':
+          description: Задача успешно создана
+          headers:
+            Location:
+              description: URL созданной задачи
+              schema:
+                type: string
+                format: uri
+        '400':
+          description: |
+            Невалидные данные:
+            - Не указано название задачи
+            - Не указано описание задачи
+            - Не указан приоритет
+            - Не указан статус
+            - Не указан исполнитель
+        '401':
+          description: Требуется авторизация
+        '403':
+          description: Недостаточно прав (требуется роль MANAGER)
+        '404':
+          description: Исполнитель не найден
+
+
+  /employee/{userId}/tasks/{taskId}:
+    get:
+      tags:
+        - Employee Tasks
+      summary: Получение конкретной задачи сотрудника
+      description: |
+        Возвращает детальную информацию о конкретной задаче.
+        Доступно только менеджеру или самому пользователю.
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 123
+          description: ID сотрудника-исполнителя
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+          description: ID задачи
+      responses:
+        '200':
+          description: Детали задачи
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTaskDto'
+        '401':
+          description: Требуется авторизация
+        '403':
+          description: Нет прав доступа
+        '404':
+          description: Задача не найдена или не принадлежит пользователю
+
+    patch:
+      tags:
+        - Employee Tasks
+      summary: Отправка задачи на проверку
+      description: |
+        Изменяет статус проверки задачи.
+        Доступно только менеджеру или исполнителю задачи.
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 123
+          description: ID исполнителя задачи
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+          description: ID задачи
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCheckingDto'
+            example:
+              onChecking: true
+              status: "DONE"
+      responses:
+        '204':
+          description: Статус проверки успешно обновлен
+        '400':
+          description: |
+            Невалидные данные:
+            - Не указан флаг проверки
+            - Не указан статус задачи
+            - Некорректный статус для операции
+        '401':
+          description: Требуется авторизация
+        '403':
+          description: Нет прав доступа
+        '404':
+          description: Задача не найдена или не принадлежит пользователю
+
+  /manager/tasks/my:
+    get:
+      tags:
+        - Manager Tasks
+      summary: Получить задачи, созданные текущим менеджером
+      description: |
+        Возвращает пагинированный список задач, где текущий пользователь является автором.
+        Доступно только пользователям с ролью MANAGER.
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            format: int32
+            default: 0
+            minimum: 0
+          description: Номер страницы (начинается с 0)
+        - name: size
+          in: query
+          schema:
+            type: integer
+            format: int32
+            default: 10
+            minimum: 5
+            maximum: 15
+          description: Количество элементов на странице (5-15)
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            default: "id"
+            enum: [ id, name, priority, status, createdDate ]
+          description: Поле для сортировки
+        - name: direction
+          in: query
+          schema:
+            type: string
+            default: "asc"
+            enum: [ asc, desc ]
+          description: Направление сортировки
+      responses:
+        '200':
+          description: Список задач текущего менеджера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedTasks'
+        '400':
+          description: Неверные параметры запроса
+        '401':
+          description: Требуется авторизация
+        '403':
+          description: Недостаточно прав (требуется роль MANAGER)
+
+  /manager/tasks/{taskId}/check:
+    patch:
+      tags:
+        - Manager Tasks
+      summary: Изменить статус проверки задачи
+      description: |
+        Изменяет статус проверки задачи (например, отправляет на ревью или завершает проверку).
+        Доступно только пользователям с ролью MANAGER.
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+          description: ID задачи для изменения статуса проверки
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCheckingDto'
+            example:
+              onChecking: true
+              status: "ON_REVIEW"
+      responses:
+        '204':
+          description: Статус проверки успешно изменен
+        '400':
+          description: |
+            Невалидные данные:
+            - Не указан статус проверки
+            - Не указан статус задачи
+            - Некорректный переход статусов
+        '401':
+          description: Требуется авторизация
+        '403':
+          description: Недостаточно прав (требуется роль MANAGER)
+        '404':
+          description: Задача не найдена
+
+
+
+  /manager/tasks/{taskId}:
+    patch:
+      tags:
+        - Manager Tasks
+      summary: Обновить задачу
+      description: |
+        Обновляет информацию о задаче.
+        Доступно только пользователям с ролью MANAGER.
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+          description: ID задачи для обновления
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUpdateTaskDto'
+            example:
+              name: "Обновленное название задачи"
+              description: "Обновленное описание задачи"
+              priority: "HIGH"
+              status: "IN_PROGRESS"
+              executorId: 123
+      responses:
+        '204':
+          description: Задача успешно обновлена
+        '400':
+          description: |
+            Невалидные данные:
+            - Не указано название задачи
+            - Не указано описание задачи
+            - Не указан приоритет
+            - Не указан статус
+            - Не указан исполнитель
+        '401':
+          description: Требуется авторизация
+        '403':
+          description: Недостаточно прав (требуется роль MANAGER)
+        '404':
+          description: |
+            Не найдено:
+            - Задача с указанным ID
+            - Исполнитель с указанным ID
+
+    delete:
+      tags:
+        - Manager Tasks
+      summary: Удалить задачу
+      description: |
+        Удаляет задачу по ID.
+        Доступно только пользователям с ролью MANAGER.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+          description: ID задачи для удаления
+      responses:
+        '204':
+          description: Задача успешно удалена
+        '401':
+          description: Требуется авторизация
+        '403':
+          description: Недостаточно прав (требуется роль MANAGER)
+        '404':
+          description: Задача с указанным ID не найдена
+
+  /employee/{userId}/tasks/{taskId}/comments:
+    get:
+      tags:
+        - Comments
+      summary: Получить комментарии к задаче
+      description: |
+        Возвращает список комментариев для указанной задачи.
+        Доступно менеджеру или исполнителю задачи.
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 123
+          description: ID пользователя (исполнителя задачи)
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+          description: ID задачи
+      responses:
+        '200':
+          description: Список комментариев
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetCommentDto'
+        '401':
+          description: Требуется авторизация
+        '403':
+          description: Нет прав доступа (не менеджер и не исполнитель)
+        '404':
+          description: Комментарии или задача не найдены
+
+    post:
+      tags:
+        - Comments
+      summary: Добавить комментарий к задаче
+      description: |
+        Создает новый комментарий для указанной задачи.
+        Доступно менеджеру или исполнителю задачи.
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 123
+          description: ID пользователя (исполнителя задачи)
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 456
+          description: ID задачи
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUpdateCommentDto'
+            example:
+              text: "Пожалуйста, уточните требования в пункте 2.3"
+      responses:
+        '201':
+          description: Комментарий успешно создан
+          headers:
+            Location:
+              description: URL созданного комментария
+              schema:
+                type: string
+                format: uri
+        '400':
+          description: |
+            Невалидные данные:
+            - Текст комментария пустой
+        '401':
+          description: Требуется авторизация
+        '403':
+          description: Нет прав доступа (не менеджер и не исполнитель)
+        '404':
+          description: |
+            Не найдено:
+            - Задача с указанным ID
+            - Пользователь с указанным ID
+            
+  /employee/{userId}/tasks/{taskId}/comments/{commentId}:
+    patch:
+      tags:
+        - Comments
+      summary: Обновить комментарий
+      description: |
+        Обновляет текст существующего комментария.
+        Доступно только автору комментария или менеджеру.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 123
+          description: ID пользователя (исполнителя задачи)
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 456
+          description: ID задачи
+        - name: commentId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 789
+          description: ID комментария
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUpdateCommentDto'
+            example:
+              text: "Обновленный текст комментария"
+      responses:
+        '204':
+          description: Комментарий успешно обновлен
+        '400':
+          description: |
+            Невалидные данные:
+            - Текст комментария пустой
+        '401':
+          description: Требуется авторизация
+        '403':
+          description: |
+            Нет прав доступа:
+            - Не автор комментария
+            - Не менеджер
+        '404':
+          description: |
+            Не найдено:
+            - Комментарий с указанным ID
+            - Задача с указанным ID
+            - Пользователь с указанным ID 
+            
+    delete:
+      tags:
+        - Comments
+      summary: Удалить комментарий
+      description: |
+        Удаляет комментарий к задаче.
+        Доступно только автору комментария или менеджеру.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 123
+          description: ID пользователя (исполнителя задачи)
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 456
+          description: ID задачи
+        - name: commentId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 789
+          description: ID комментария
+      responses:
+        '204':
+          description: Комментарий успешно удален
+        '401':
+          description: Требуется авторизация
+        '403':
+          description: |
+            Нет прав доступа:
+            - Не автор комментария
+            - Не менеджер
+        '404':
+          description: |
+            Не найдено:
+            - Комментарий с указанным ID
+            - Задача с указанным ID
+            - Пользователь с указанным ID
+
+
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "Введите JWT токен (полученный при логине)"
+
+  schemas:
+    UserLoginDto:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          example: mySecurePassword123
+
+    CreateUserDto:
+      type: object
+      required:
+        - name
+        - email
+        - password
+        - userRole
+      properties:
+        name:
+          type: string
+          example: Иван Иванов
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          example: mySecurePassword123
+        userRole:
+          type: string
+          example: EMPLOYEE
+
+    GetUserDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Иван Иванов
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          example: mySecurePassword123
+        age:
+          type: integer
+          example: 30
+        role:
+          type: string
+          example: "EMPLOYEE"
+
+    UpdateUserPasswordDto:
+      type: object
+      required:
+        - currentPassword
+        - newPassword
+        - newPasswordConfirmation
+      properties:
+        currentPassword:
+          type: string
+          description: Текущий пароль пользователя
+          example: "oldPassword123"
+        newPassword:
+          type: string
+          description: Новый пароль (мин. 8 символов)
+          minLength: 8
+          example: "newSecurePassword123"
+        newPasswordConfirmation:
+          type: string
+          description: Подтверждение нового пароля
+          example: "newSecurePassword123"
+
+    UpdateUserEmailDto:
+      type: object
+      required:
+        - newEmail
+        - currentPassword
+      properties:
+        newEmail:
+          type: string
+          format: email
+          description: Новый email пользователя
+          example: "newemail@example.com"
+        currentPassword:
+          type: string
+          description: Текущий пароль для подтверждения
+          example: "currentPassword123"
+
+    UpdateUserBioDto:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+          description: Имя пользователя (необязательное поле)
+          example: "Иван Иванов"
+        age:
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 120
+          description: Возраст пользователя
+          example: 30
+
+    PagedTasks:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/GetTaskForListDto'
+        totalElements:
+          type: integer
+          example: 42
+        totalPages:
+          type: integer
+          example: 5
+        number:
+          type: integer
+          example: 0
+        size:
+          type: integer
+          example: 10
+
+    GetTaskForListDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: "Рефакторинг кода"
+        description:
+          type: string
+          example: "Провести рефакторинг модуля авторизации"
+        priority:
+          type: string
+          enum: [ LOW, MEDIUM, HIGH]
+          example: "MEDIUM"
+        status:
+          type: string
+          enum: [ WAITING, IN_PROGRESS, DONE]
+          example: "IN_PROGRESS"
+        commentsCount:
+          type: integer
+          example: 3
+
+    GetTaskDto:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Рефакторинг модуля авторизации"
+        description:
+          type: string
+          example: "Необходимо переработать систему аутентификации"
+        priority:
+          type: string
+          enum: [ LOW, MEDIUM, HIGH ]
+          example: "MEDIUM"
+        status:
+          type: string
+          enum: [ WAITING, IN_PROGRESS, DONE ]
+          example: "IN_PROGRESS"
+        onChecking:
+          type: boolean
+          example: false
+          description: Флаг проверки задачи
+        author:
+          $ref: '#/components/schemas/UserPreviewDto'
+        executor:
+          $ref: '#/components/schemas/UserPreviewDto'
+      example:
+        name: "Рефакторинг модуля авторизации"
+        description: "Необходимо переработать систему аутентификации"
+        priority: "HIGH"
+        status: "IN_PROGRESS"
+        onChecking: false
+        author:
+          id: 101
+          name: "Алексей Петров"
+          age: 26
+        executor:
+          id: 123
+          name: "Иван Иванов"
+          age: 21
+
+    UserPreviewDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 123
+          description: Уникальный идентификатор пользователя
+        name:
+          type: string
+          example: "Иван Иванов"
+          description: Полное имя пользователя
+        age:
+          type: integer
+          example: 30
+          description: Возраст пользователя
+      required:
+        - id
+        - name
+        - age
+      example:
+        id: 123
+        name: "Иван Иванов"
+        age: 30
+
+    TaskCheckingDto:
+      type: object
+      required:
+        - onChecking
+        - status
+      properties:
+        onChecking:
+          type: boolean
+          description: Флаг отправки на проверку
+          example: true
+        status:
+          type: string
+          enum: [ WAITING, IN_PROGRESS, DONE ]
+          example: "DONE"
+      example:
+        onChecking: true
+        status: "DONE"
+
+    CreateUpdateTaskDto:
+      type: object
+      required:
+        - name
+        - description
+        - priority
+        - status
+        - executorId
+      properties:
+        name:
+          type: string
+          minLength: 3
+          maxLength: 100
+          example: "Рефакторинг модуля авторизации"
+          description: Название задачи
+        description:
+          type: string
+          minLength: 10
+          example: "Необходимо переработать систему аутентификации"
+          description: Подробное описание задачи
+        priority:
+          type: string
+          enum: [ LOW, MEDIUM, HIGH ]
+          example: "MEDIUM"
+        status:
+          type: string
+          enum: [ WAITING, IN_PROGRESS, DONE ]
+          example: "IN_PROGRESS"
+        executorId:
+          type: integer
+          format: int64
+          example: 123
+          description: ID пользователя-исполнителя
+      example:
+        name: "Рефакторинг модуля авторизации"
+        description: "Необходимо переработать систему аутентификации"
+        priority: "HIGH"
+        status: "NEW"
+        executorId: 123
+
+    GetCommentDto:
+      type: object
+      properties:
+        text:
+          type: string
+          description: Текст комментария
+          example: "Пожалуйста, проверьте расчеты в разделе 3.2"
+        author:
+          $ref: '#/components/schemas/UserPreviewDto'
+      required:
+        - text
+        - author
+      example:
+        text: "Пожалуйста, проверьте расчеты в разделе 3.2"
+        author:
+          id: 101
+          name: "Мария Иванова"
+          email: "maria@example.com"
+
+    CreateUpdateCommentDto:
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          type: string
+          minLength: 1
+          maxLength: 1000
+          example: "Пожалуйста, уточните требования в пункте 2.3"
+          description: Текст комментария
+      example:
+        text: "Пожалуйста, уточните требования в пункте 2.3"

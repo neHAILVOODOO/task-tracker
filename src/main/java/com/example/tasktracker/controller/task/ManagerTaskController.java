@@ -97,18 +97,6 @@ public class ManagerTaskController {
 
     }
 
-    @GetMapping("/user/{userId}/tasks")
-    @PreAuthorize("hasRole('MANAGER')")
-    public ResponseEntity<Page<GetTaskForListDto>> getUserTasks(
-            @PathVariable long userId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") @Min(5) @Max(15) int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction
-    ) {
-        Page<GetTaskForListDto> tasks = taskService.findTasksByExecutor(userId, page, size, sortBy, direction);
-        return ResponseEntity.ok(tasks);
-    }
 
 
 }
