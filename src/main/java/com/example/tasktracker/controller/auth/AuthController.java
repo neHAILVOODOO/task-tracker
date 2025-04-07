@@ -4,8 +4,6 @@ import com.example.tasktracker.model.dto.user.CreateUserDto;
 import com.example.tasktracker.model.dto.user.UserLoginDto;
 import com.example.tasktracker.service.AuthService;
 import com.example.tasktracker.service.UserService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

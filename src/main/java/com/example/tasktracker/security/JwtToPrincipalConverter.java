@@ -4,8 +4,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.tasktracker.model.enums.UserRole;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Component
 public class JwtToPrincipalConverter {
 
