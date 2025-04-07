@@ -125,7 +125,7 @@ paths:
         Изменяет email текущего авторизованного пользователя.
         Требует подтверждения текущим паролем.
       security:
-        - bearerAuth: [ ]  # Требуется JWT-токен
+        - bearerAuth: [ ]
       requestBody:
         required: true
         content:
@@ -306,7 +306,7 @@ paths:
               name: "Рефакторинг модуля авторизации"
               description: "Необходимо переработать систему аутентификации"
               priority: "HIGH"
-              status: "NEW"
+              status: "WAITING"
               executorId: 123
       responses:
         '201':
@@ -508,7 +508,7 @@ paths:
               $ref: '#/components/schemas/TaskCheckingDto'
             example:
               onChecking: true
-              status: "ON_REVIEW"
+              status: "DONE"
       responses:
         '204':
           description: Статус проверки успешно изменен
@@ -1112,7 +1112,7 @@ components:
         name: "Рефакторинг модуля авторизации"
         description: "Необходимо переработать систему аутентификации"
         priority: "HIGH"
-        status: "NEW"
+        status: "WAITING"
         executorId: 123
 
     GetCommentDto:
